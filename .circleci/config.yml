@@ -38,6 +38,32 @@ jobs:
           name: Run tests
           command: make test
 
+  lint_files:
+    docker:
+      - image: python:3.7
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: v1-py3-deps-{{ checksum "setup.py" }}
+
+      - run:
+          name: Activate virtualenv
+          command: echo "source /tmp/venv/country_template/bin/activate" >> $BASH_ENV
+
+      - run: make check-syntax-errors
+
+      - run: make check-style
+
+      - run:
+          name: Lint Python files
+          command: .circleci/lint-changed-python-files.sh
+
+      - run:
+          name: Lint YAML tests
+          command: .circleci/lint-changed-yaml-tests.sh
+
   check_version:
     docker:
       - image: python:3.7
@@ -104,6 +130,9 @@ workflows:
   build_and_deploy:
     jobs:
       - build
+      - lint-files:
+          requires:
+            - build
       - test_api:
           requires:
             - build
@@ -111,6 +140,7 @@ workflows:
       - deploy:
           requires:
             - build
+            - lint-files
             - check_version
           filters:
             branches:
