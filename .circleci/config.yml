@@ -130,7 +130,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - lint-files:
+      - lint_files:
           requires:
             - build
       - test_api:
@@ -140,7 +140,7 @@ workflows:
       - deploy:
           requires:
             - build
-            - lint-files
+            - lint_files
             - check_version
           filters:
             branches:
