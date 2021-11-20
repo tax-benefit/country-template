@@ -71,13 +71,6 @@ jobs:
           key: build-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ github.sha }}
       - run: openfisca test --country-package openfisca_country_template openfisca_country_template/tests
 
-  validate-yaml:
-    uses: tax-benefit/actions/.github/workflows/validate_yaml.yml@v1
-    with:
-      parameters_path: "openfisca_country_template/parameters"
-    secrets:
-      token: ${{ secrets.CONTROL_CENTER_TOKEN }}
-
   test-api:
     runs-on: ubuntu-latest
     needs: [ build ]
